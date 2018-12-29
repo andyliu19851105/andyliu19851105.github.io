@@ -126,6 +126,7 @@ clang -rewrite-objc MyClass.m
 ```
 好吧，我们得到了一个3M大小，10w多行的.cpp文件（这绝对是Apple值得吐槽的一点），我们忽略掉所有和我们无关的东西，在文件的最后，我们找到了如下代码片段：
 
+{% raw %}
 ```
 static struct /*_method_list_t*/ {
 unsigned int entsize;  // sizeof(struct _objc_method)
@@ -175,6 +176,7 @@ static struct _category_t *L_OBJC_LABEL_CATEGORY_$ [1] __attribute__((used, sect
 &_OBJC_$_CATEGORY_MyClass_$_MyAddition,
 };
 ```
+{% endraw %}
 我们可以看到，
 
 1. 首先编译器生成了实例方法列表OBJC$_CATEGORY_INSTANCE_METHODSMyClass$_MyAddition和属性列表OBJC$_PROP_LISTMyClass$_MyAddition，两者的命名都遵循了公共前缀+类名+category名字的命名方式，而且实例方法列表里面填充的正是我们在MyAddition这个category里面写的方法printName，而属性列表里面填充的也正是我们在MyAddition里添加的name属性。还有一个需要注意到的事实就是category的名字用来给各种列表以及后面的category结构体本身命名，而且有static来修饰，所以在同一个编译单元里我们的category名不能重复，否则会出现编译错误。
